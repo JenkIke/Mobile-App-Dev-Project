@@ -1,0 +1,10 @@
+node_modules/
+.expo/
+dist/
+web-build/
+android/
+ios/
+package-lock.json
+assets/
+# Team-edited doc; Prettier would re-pad every table and make diffs noisy
+ARCHITECTURE.md
