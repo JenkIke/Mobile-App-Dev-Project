@@ -142,9 +142,62 @@ README.md
 | AI feature costs and key security | Backend proxy, aggregated data, rate limiting |
 | Scope too large for the timeline | Core scoring and distance first; swing tracking and AI are staged after |
 
-## 11. Change Log
+## 11. UI Design and Front-End Structure
+
+**Design source:** Screens, components and tokens are designed in Figma. Reference exports are kept in `/design`. The rules for changing a design are in the team charter under "Design workflow".
+
+**Theme and tokens:**
+- **Colour tokens** (`bg`, `surface`, `primary`, `accent`, `danger` and so on) are defined once in `tailwind.config.js` and used through NativeWind class names such as `bg-surface` and `text-muted`. Raw hex values are not used in components.
+- **Light and dark:** Each token has a light and a dark value. The app follows the phone's colour scheme, so switching theme changes token values, never token names.
+- **Type scale:** Five named text styles: `display` (34 Bold), `title` (28 Bold), `heading` (18 Semi Bold), `body` and `caption`.
+- **Spacing and radii:** Spacing follows an 8 pt grid, and corner radii use the 12 / 14 / 16 / 24 scale.
+
+**Components:** Shared UI components live in `/components/ui`, one per Figma component and with the same name:
+
+`Button`, `Chip`, `Input`, `Toggle`, `BackButton`, `NavTitle`, `TabBar`, `RoundRow`, `CourseCard`, `ClubOption`, `ClubRow`, `Stat`, `Conditions`, `Avatar`
+
+Figma variants become props, for example `<Button variant="primary | secondary | accent">`. Screens are built from these components rather than new styled views.
+
+**Navigation:** Expo Router, with file-based routes in three groups:
+
+```
+app/
+  (auth)/      splash, sign-in, create-account, reset-password
+               -> stack, no tab bar
+  (tabs)/      index (Home), play (Course Select), bag (My Bag), stats
+               -> bottom tabs
+               bag/ has its own stack: add-club, swings, record-swing,
+               swing-review, new-practice
+  profile      -> pushed from the avatar on Home
+  round/       setup, hole/[number], caddie, scorecard, summary
+               -> stack shown over the tabs, tab bar hidden
+  rounds/      index (Round History), [id] (Round Details)
+               -> stack pushed from Home
+```
+
+- The in-round screens are outside the `(tabs)` group, so the tab bar is hidden for the whole round.
+- Finishing a round replaces the in-round stack with Home, so back does not reopen a finished round.
+
+**Icons:** Ionicons from `@expo/vector-icons`.
+
+| Rule | Value |
+|---|---|
+| Inline icons | 20 |
+| Navigation and tabs | 24 |
+| State | Outline when inactive, filled when active |
+| Accessibility | Every icon-only button has an `accessibilityLabel` and a touch target of at least 48 × 48 dp |
+
+**Assets:**
+- `/assets` holds the images bundled with the app (logo, app icon, splash, placeholder images) and is referenced from code and `app.json`.
+- `/design` holds reference material only (mockups, flows, standards, source files) and is never imported by code.
+
+**Decisions log entry:**
+> **2026-11:** Adopted the Figma design system. Tokens are implemented through NativeWind with light and dark values; in-round screens are a separate stack with the tab bar hidden; one shared component per Figma component.
+
+## 12. Change Log
 
 | Date | Change | Decided by |
 |---|---|---|
 | 2026-10-13 | Initial architecture draft | Team |
 | 2026-10-15 | Reconciled with team charter. Decided: expo-router, NativeWind, React Context, react-native-gifted-charts. Swing tracking uses sensors and camera (both core; videos stay on the phone). Added `practice_sessions` table and putts per hole. Min Android version set. Added technical risks. | Isaac Jenkins consulting the team |
+| 2026-11-10 | Reconciled with team charter. Design updates now included. | Isaac Jenkins |
